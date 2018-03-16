@@ -1,5 +1,6 @@
 % 
 clear; 
+close all;
 number_of_train = 250;
 %% Load Training data
 train_data = importdata('hw4.train1');
@@ -60,18 +61,17 @@ ylabel('ans')
 %% Linear Regression
 % With 2 features
 rgs_2 = regress(train_ANS,[ones(size(pc1)) pc1 pc2]);
+rgs_3 = lasso(scores(:,2:10),train_ANS,'CV',10);
 % With 3 features
-figure('Name','Linear Regression')
-scatter3(pc1,pc2,train_ANS,'filled')
+figure('Name','Linear Regression');
+scatter3(pc1,pc2,train_ANS,'filled');
 hold on
-
-
 
 f1fit = min(pc1):100:max(pc1);
 f2fit = min(pc2):10:max(pc2);
 [F1FIT,F2FIT] = meshgrid(f1fit,f2fit);
 YFIT = rgs_2(1) + rgs_2(2)*F1FIT + rgs_2(3)*F2FIT;
-mesh(F1FIT,F2FIT,YFIT)
+mesh(F1FIT,F2FIT,YFIT);
 xlabel('pc1')
 ylabel('pc2')
 zlabel('ans')
