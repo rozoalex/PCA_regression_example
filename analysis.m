@@ -3,7 +3,7 @@ clear;
 close all;
 number_of_train = 250;
 %% Load Training data
-train_data = importdata('hw4.train1');
+train_data = importdata('hw4.train4');
 % importdata('hw4.train2');importdata('hw4.train3')
 ANS = train_data(:,1);
 train_FEATURES = train_data(1:number_of_train,2:end);
@@ -35,6 +35,9 @@ annotation('textbox', [.15, .05, .7, .15], 'string', 'We can see that, the first
 pc1 = scores(:,1); % feature 1
 pc2 = scores(:,2); % feature 2
 pc3 = scores(:,3); % feature 3
+pc4 = scores(:,4); % feature 3
+pc5 = scores(:,5); % feature 3
+pc6 = scores(:,6); % feature 3
 figure('Name', 'f1 f2 f3')
 %
 subplot(2,2,1)
@@ -60,8 +63,10 @@ ylabel('ans')
 
 %% Linear Regression
 % With 2 features
-rgs_2 = regress(train_ANS,[ones(size(pc1)) pc1 pc2]);
-rgs_3 = lasso(scores(:,2:10),train_ANS,'CV',10);
+rgs_2 = regress(train_ANS,[ones(size(pc1)) pc1 pc2 pc3]);
+rgs_6 = regress(train_ANS,[ones(size(pc1)) pc1 pc2 pc3 pc4 pc5 pc6]);
+
+% rgs_3 = lasso(scores(:,2:10),train_ANS,'CV',10);
 % With 3 features
 figure('Name','Linear Regression');
 scatter3(pc1,pc2,train_ANS,'filled');
@@ -84,14 +89,29 @@ varify_transd_FEATURES = varify_FEATURES * coefs;
 varify_pc1 = varify_transd_FEATURES(:,1);
 varify_pc2 = varify_transd_FEATURES(:,2);
 varify_pc3 = varify_transd_FEATURES(:,3);
-varify_pcs = [varify_pc1 varify_pc2 varify_pc3];
-varify_predict_ANS = varify_pcs * rgs_2;
-figure('Name','Varify Predicted Results')
-plot(varify_ANS, varify_predict_ANS,'.')
+varify_pc4 = varify_transd_FEATURES(:,4);
+varify_pc5 = varify_transd_FEATURES(:,5);
+varify_pc6 = varify_transd_FEATURES(:,6);
+varify_pcs_3 = [ones(size(varify_pc1)) varify_pc1 varify_pc2 varify_pc3];
+varify_pcs_6 = [ones(size(varify_pc1)) varify_pc1 varify_pc2 varify_pc3 varify_pc4 varify_pc5 varify_pc6];
+varify_predict_ANS_3 = varify_pcs_3 * rgs_2;
+varify_predict_ANS_6 = varify_pcs_6 * rgs_6;
+
+figure('Name','Varify Predicted Results 3D')
+plot(varify_ANS, varify_predict_ANS_3,'.')
 xlabel('ans')
 ylabel('predict')
-RMSE = sqrt(mean((varify_ANS - varify_predict_ANS).^2));  % Root Mean Squared Error
+RMSE = sqrt(mean((varify_ANS - varify_predict_ANS_3).^2));  % Root Mean Squared Error
 annotation('textbox', [.15, .05, .7, .15], 'string', sprintf('RMSE = %0.5e',RMSE))
+
+figure('Name','Varify Predicted Results 6D')
+plot(varify_ANS, varify_predict_ANS_6,'.')
+xlabel('ans')
+ylabel('predict')
+RMSE_6 = sqrt(mean((varify_ANS - varify_predict_ANS_6).^2));  % Root Mean Squared Error
+annotation('textbox', [.15, .05, .7, .15], 'string', sprintf('RMSE = %0.5e',RMSE_6))
+
+
 %%
 % 
 % l = len(train_ANS)
