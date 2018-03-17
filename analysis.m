@@ -1,9 +1,12 @@
-% 
+% This file is the MAIN program, running this will not generate result file
+% Uncomment the last few line to regenerate result
+% Running this will show some diagrams to show the logic behind the model
+%%
 clear; 
 close all;
 number_of_train = 250;
 %% Load Training data
-train_data = importdata('hw4.train4');
+train_data = importdata('hw4.train3');
 % importdata('hw4.train2');importdata('hw4.train3')
 ANS = train_data(:,1);
 train_FEATURES = train_data(1:number_of_train,2:end);
@@ -63,9 +66,9 @@ ylabel('ans')
 
 %% Linear Regression
 % With 2 features
-rgs_2 = regress(train_ANS,[ones(size(pc1)) pc1 pc2 pc3]);
-rgs_6 = regress(train_ANS,[ones(size(pc1)) pc1 pc2 pc3 pc4 pc5 pc6]);
-
+rgs_2 = regress(train_ANS,[ones(size(train_ANS)) scores(:,1:3)]);
+% rgs_l = lasso(scores(:,1:3),train_ANS);
+rgs_6 = regress(train_ANS,[ones(size(train_ANS)) scores(:,1:6)]);
 % rgs_3 = lasso(scores(:,2:10),train_ANS,'CV',10);
 % With 3 features
 figure('Name','Linear Regression');
@@ -86,14 +89,10 @@ zlabel('ans')
 varify_FEATURES = train_data(number_of_train+1:304,2:end);
 varify_ANS = ANS((number_of_train+1):304);
 varify_transd_FEATURES = varify_FEATURES * coefs;
-varify_pc1 = varify_transd_FEATURES(:,1);
-varify_pc2 = varify_transd_FEATURES(:,2);
-varify_pc3 = varify_transd_FEATURES(:,3);
-varify_pc4 = varify_transd_FEATURES(:,4);
-varify_pc5 = varify_transd_FEATURES(:,5);
-varify_pc6 = varify_transd_FEATURES(:,6);
-varify_pcs_3 = [ones(size(varify_pc1)) varify_pc1 varify_pc2 varify_pc3];
-varify_pcs_6 = [ones(size(varify_pc1)) varify_pc1 varify_pc2 varify_pc3 varify_pc4 varify_pc5 varify_pc6];
+
+varify_pcs_3 = [ones(size(varify_ANS)) varify_transd_FEATURES(:,1:3)];
+varify_pcs_6 = [ones(size(varify_ANS)) varify_transd_FEATURES(:,1:6)];
+
 varify_predict_ANS_3 = varify_pcs_3 * rgs_2;
 varify_predict_ANS_6 = varify_pcs_6 * rgs_6;
 
@@ -112,7 +111,8 @@ RMSE_6 = sqrt(mean((varify_ANS - varify_predict_ANS_6).^2));  % Root Mean Square
 annotation('textbox', [.15, .05, .7, .15], 'string', sprintf('RMSE = %0.5e',RMSE_6))
 
 
-%%
-% 
-% l = len(train_ANS)
-% rgs_3 = regress(ANS,[ones(size(f1)) f1 f2 f3]);
+%% Run this will generate the results for prediction
+% for i = 1:4
+%   do_analyze(i, true);
+% end
+
